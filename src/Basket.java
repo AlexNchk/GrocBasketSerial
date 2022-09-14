@@ -1,46 +1,61 @@
 import java.io.*;
+import java.util.Arrays;
 
-public class Basket {
-    protected final String product;
-    protected final int price;
-    private static int[] sumOneProduct;
+public class Basket implements Serializable {
 
-    public Basket(String product, int price) {
+    private static final long serialVersionUID = 1L;
+    protected final String[] product;
+    protected final int[] price;
+    protected int[] sumOneProduct;
+
+    public Basket(String[] product, int[] price) {
         this.product = product;
         this.price = price;
+        if (sumOneProduct == null) {
+            sumOneProduct = new int[product.length];
+        }
     }
 
-    public static void setSumOneProduct(int productsLength) {
-        sumOneProduct = new int[productsLength];
+    @Override
+    public String toString() {
+        return "Basket" + "product, " + Arrays.toString(product) +
+                "price" + Arrays.toString(price) + "sumOneProduct" + Arrays.toString(sumOneProduct);
     }
 
-    public static void addToCart(int productNum, int amount) {
+    public void addToCart(int productNum, int amount) {
         sumOneProduct[productNum - 1] += amount;
     }
 
-    public static void printCart(String[] products, int[] prices) {
+    public void printSale() {
+        System.out.println("Список возможных товаров для покупок:");
+        for (int i = 0; i < product.length; i++) {
+            System.out.println(i + 1 + ". " + product[i] + " " + price[i] + " руб/шт");
+        }
+    }
+
+    public void printCart() {
         System.out.println("Ваша корзина:");
         for (int i = 0; i < sumOneProduct.length; i++) {
             if (sumOneProduct[i] != 0) {
-                System.out.println(products[i] + " " + sumOneProduct[i] +
-                        " шт " + prices[i] + " руб/шт " + sumOneProduct[i] * prices[i] + " руб в сумме");
+                System.out.println(i + 1 + " " + product[i] +
+                        " " + price[i] + " руб/шт " + sumOneProduct[i] * price[i] + " руб в сумме");
             }
         }
     }
 
-    public static void saveTxt(File basketUser) throws IOException {
-        try (PrintWriter out = new PrintWriter(basketUser)) {
-            for (int e : sumOneProduct)
-                out.print(e + " ");
+    public void saveBin(File file) throws IOException {
+        try (ObjectOutputStream saveBinFile = new ObjectOutputStream(new FileOutputStream(file))) {
+            saveBinFile.writeObject(this);
+            System.out.println("Файл bin создан. Сериализация");
         }
     }
 
-    public static void loadTxt() throws IOException {
-        BufferedReader basketUserLoad = new BufferedReader(new FileReader("basket.txt"));
-        String readFile = String.valueOf(basketUserLoad.readLine());
-        String[] loadBasket = readFile.split(" ");
-        for (int i = 0; i < sumOneProduct.length; i++) {
-            sumOneProduct[i] = Integer.parseInt(loadBasket[i]);
+    public static Basket loadFromBinFile(File file) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream loadBinFile = new ObjectInputStream(new FileInputStream(file))) {
+            Basket baskets = (Basket) loadBinFile.readObject();
+            loadBinFile.close();
+            System.out.println("Файл bin загружен. Десериализация");
+            return baskets;
         }
     }
 }
