@@ -1,24 +1,31 @@
 import java.io.*;
+import java.util.Arrays;
 
 public class Basket {
-    protected final String product;
-    protected final int price;
-    private static int[] sumOneProduct;
+    protected final String[] product;
+    protected final int[] price;
+    private int[] sumOneProduct;
 
-    public Basket(String product, int price) {
+    public Basket(String[] product, int[] price) {
         this.product = product;
         this.price = price;
+        if (sumOneProduct == null) {
+            sumOneProduct = new int[product.length];
+        }
     }
 
-    public static void setSumOneProduct(int productsLength) {
-        sumOneProduct = new int[productsLength];
-    }
-
-    public static void addToCart(int productNum, int amount) {
+    public void addToCart(int productNum, int amount) {
         sumOneProduct[productNum - 1] += amount;
     }
 
-    public static void printCart(String[] products, int[] prices) {
+    public void printSale() {
+        System.out.println("Список возможных товаров для покупок:");
+        for (int i = 0; i < product.length; i++) {
+            System.out.println(i + 1 + ". " + product[i] + " " + price[i] + " руб/шт");
+        }
+    }
+
+    public void printCart(String[] products, int[] prices) {
         System.out.println("Ваша корзина:");
         for (int i = 0; i < sumOneProduct.length; i++) {
             if (sumOneProduct[i] != 0) {
@@ -28,19 +35,27 @@ public class Basket {
         }
     }
 
-    public static void saveTxt(File basketUser) throws IOException {
+    public void saveTxt(File basketUser) throws IOException {
         try (PrintWriter out = new PrintWriter(basketUser)) {
             for (int e : sumOneProduct)
                 out.print(e + " ");
         }
     }
 
-    public static void loadTxt() throws IOException {
-        BufferedReader basketUserLoad = new BufferedReader(new FileReader("basket.txt"));
-        String readFile = String.valueOf(basketUserLoad.readLine());
-        String[] loadBasket = readFile.split(" ");
-        for (int i = 0; i < sumOneProduct.length; i++) {
-            sumOneProduct[i] = Integer.parseInt(loadBasket[i]);
+    public void loadTxt() throws IOException {
+        try (BufferedReader basketUserLoad = new BufferedReader(new FileReader("basket.txt"))) {
+            String readFile = String.valueOf(basketUserLoad.readLine());
+            String[] loadBasket = readFile.split(" ");
+            for (int i = 0; i < sumOneProduct.length; i++) {
+                sumOneProduct[i] = Integer.parseInt(loadBasket[i]);
+            }
         }
+        ;
+    }
+
+    @Override
+    public String toString() {
+        return "Basket" + "product, " + Arrays.toString(product) +
+                "price" + Arrays.toString(price) + "sumOneProduct" + Arrays.toString(sumOneProduct);
     }
 }
