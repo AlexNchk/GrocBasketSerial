@@ -55,7 +55,10 @@ public class Basket {
 
     @Override
     public String toString() {
-        return "Basket" + "product, " + Arrays.toString(product) +
-                "price" + Arrays.toString(price) + "sumOneProduct" + Arrays.toString(sumOneProduct);
+        return "Basket{" +
+                "price=" + Arrays.toString(price) +
+                ", product=" + Arrays.toString(product) +
+                ", basket=" + Arrays.toString(sumOneProduct) +
+                '}';
     }
 }
