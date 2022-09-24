@@ -8,7 +8,7 @@ import java.io.*;
 import java.util.Arrays;
 
 public class ClientLog {
-    public int[] saveSumOneProduct;
+    protected int[] saveSumOneProduct;
 
     public ClientLog(int[] prices) {
         if (saveSumOneProduct == null) {
